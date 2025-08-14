@@ -24,6 +24,8 @@ TOBIKO_VERSION=${TOBIKO_VERSION:-master}
 TOBIKO_PRIVATE_KEY_FILE=${TOBIKO_PRIVATE_KEY_FILE:-id_ecdsa}
 TOBIKO_KEYS_FOLDER=${TOBIKO_KEYS_FOLDER:-${TOBIKO_DIR}/external_files}
 TOBIKO_LOGS_DIR_NAME=${TOBIKO_LOGS_DIR_NAME:-"tobiko"}
+TOBIKO_PATCH_REPOSITORY="${TOBIKO_PATCH_REPOSITORY:-}"
+TOBIKO_PATCH_REFSPEC="${TOBIKO_PATCH_REFSPEC:-}"
 
 # export OS_CLOUD variable
 [ ! -z ${TOBIKO_OS_CLOUD} ] && export OS_CLOUD=${TOBIKO_OS_CLOUD} || export OS_CLOUD=default
@@ -40,6 +42,10 @@ chown tobiko:tobiko -R tobiko
 pushd tobiko
 git pull --rebase
 git checkout ${TOBIKO_VERSION}
+
+if [[ -n "$TOBIKO_PATCH_REFSPEC" ]]; then
+    git fetch "$TOBIKO_PATCH_REPOSITORY" "$TOBIKO_PATCH_REFSPEC" && git checkout FETCH_HEAD
+fi
 
 # obtain clouds.yaml, ssh private/public keys and tobiko.conf from external_files directory
 if [ ! -z ${USE_EXTERNAL_FILES} ]; then
